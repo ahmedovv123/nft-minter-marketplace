@@ -55,6 +55,7 @@ async function disconnect() {
       /></RouterLink>
       <RouterLink to="/nfts"><q-btn stretch flat label="NFTs" /></RouterLink>
       <RouterLink to="/withdraw"><q-btn stretch flat label="withdraw" /></RouterLink>
+      <RouterLink to="/exchange"><q-btn stretch flat label="exchange" /></RouterLink>
       <q-space />
       <div div v-if="currentAddress">
         UTT Balance: &nbsp;
@@ -85,7 +86,7 @@ label {
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: rgb(49, 240, 32);
   transition: 0.4s;
 }
 
@@ -93,6 +94,7 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
+
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
