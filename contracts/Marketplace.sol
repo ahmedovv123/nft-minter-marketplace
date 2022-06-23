@@ -138,12 +138,12 @@ contract NftMarketplace is ReentrancyGuard, ERC20, Ownable {
 
         INFT nft = INFT(nftAddress);
 
-        if (nft.getApproved(tokenId) != address(this) || nft.isApprovedForAll(msg.sender, address(this)) == false) {
+        if (nft.getApproved(tokenId) == address(this) || nft.isApprovedForAll(msg.sender, address(this)) == true) {
+            s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
+            emit ItemListed(msg.sender, nftAddress, tokenId, price);
+        } else {
             revert NotApprovedForMarketplace();
         }
-
-        s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
-        emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
 
     function cancelListing(address nftAddress, uint256 tokenId)
