@@ -21,7 +21,8 @@
     "quasar": "^2.7.1",
     "vue": "^3.2.36",
     "vue-confetti-explosion": "^1.0.1",
-    "vue-router": "^4.0.15"
+    "vue-router": "^4.0.15",
+    "vue3-autocounter": "^1.0.6"
   },
   "devDependencies": {
     "@quasar/vite-plugin": "^1.0.10",

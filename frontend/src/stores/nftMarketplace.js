@@ -4,6 +4,7 @@ import { Contract, ethers } from "ethers";
 import { LoadingBar } from "quasar";
 import { useConnection } from "./connection";
 import { useIpfs } from "./ipfs";
+import axios from "axios";
 
 LoadingBar.setDefaults({
   color: "purple",
@@ -69,11 +70,20 @@ CONTRACT.on("ItemBought", (buyer, nftAddress, tokenId, price) => {
   }
 });
 
+let intervalId = setInterval(async () => {
+  let data = await fetch(
+    "https://api.binance.com/api/v3/ticker/price?symbol=MATICUSDT"
+  );
+  let json = await data.json();
+  useNftMarketplace().maticPriceInUsd = json.price;
+}, 5000);
+
 export const useNftMarketplace = defineStore({
   id: "marketplace",
   state: () => ({
     NFTs: [],
     NFT_ADDRESS,
+    maticPriceInUsd: 0,
     iterator: 0,
     tokenBalance: 0,
     ethBalance: 0,
@@ -96,6 +106,7 @@ export const useNftMarketplace = defineStore({
     getCurrentNftMinPrice: (state) => state.currentNftMintPrice,
     getNftSellFee: (state) => state.nftSellFee,
     getNftAddress: (state) => state.NFT_ADDRESS,
+    getMaticPriceInUsd: (state) => state.maticPriceInUsd,
   },
   actions: {
     async loadNfts(force = false) {

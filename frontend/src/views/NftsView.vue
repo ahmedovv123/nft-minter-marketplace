@@ -98,9 +98,11 @@ async function fetchNfts() {
   </q-dialog>
 </template>
 
-<style lang="sass" scoped>
-.nft-card
-  height: 300px
-  width: 300px
-  margin-top: 30px
+<style scoped>
+.nft-card {
+  /* height: 300px;
+  width: 300px; */
+  margin-top: 30px;
+  /* text-align: center; */
+}
 </style>

@@ -2,6 +2,7 @@
 import { ethers } from "ethers";
 import { onMounted, ref, watch } from "vue";
 import { useSwapPool } from "../stores/swapPool";
+import Vue3Autocounter from "vue3-autocounter";
 const swapPool = useSwapPool();
 const loading = ref(false);
 const swapped = ref(false);
@@ -69,7 +70,7 @@ watch(tokenFromAmount, async (newAmount, _) => {
   if (newAmount === 0) return;
   loading.value = true;
   const data = await swapPool.getAmountOut(newAmount, tokenFrom.value);
-  tokenToAmount.value = ethers.utils.formatEther(data[0]);
+  tokenToAmount.value = +ethers.utils.formatEther(data[0]);
   loading.value = false;
 });
 
@@ -81,7 +82,7 @@ watch(tokenFrom, async () => {
     tokenFromAmount.value,
     tokenFrom.value
   );
-  tokenToAmount.value = ethers.utils.formatEther(data[0]);
+  tokenToAmount.value = +ethers.utils.formatEther(data[0]);
   loading.value = false;
 });
 </script>
@@ -90,10 +91,10 @@ watch(tokenFrom, async () => {
   <main>
     <q-card>
       <form>
-        <label :style="{ textAlign: 'center' }"
-          >Swapping {{ getSwapping() }}
+        <div class="text-body1" :style="{ textAlign: 'center' }">
+          Swapping {{ getSwapping() }}
           <small @click="switchTokens()"><u>switch</u></small>
-        </label>
+        </div>
         <q-input
           outlined
           :label="tokenFrom == t1Address ? 'UTT' : 'nUSD'"
@@ -187,6 +188,7 @@ u {
   border-radius: 10px;
   display: block;
   font-weight: bold;
+  border: 0;
 }
 
 .btn-grad:hover {

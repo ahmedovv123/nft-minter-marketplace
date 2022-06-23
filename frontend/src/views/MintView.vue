@@ -3,6 +3,7 @@ import { nextTick, ref, watch } from "vue";
 import { useNftMarketplace } from "../stores/nftMarketplace";
 import ConfettiExplosion from "vue-confetti-explosion";
 import { ethers } from "ethers";
+import { useRouter } from "vue-router";
 const nftMarketplace = useNftMarketplace();
 const tab = ref("mint");
 const mintedNftTokenId = ref(0);
@@ -94,7 +95,8 @@ async function onSubmitSell() {
     }
   }
 
-  onReset();
+  onResetSell();
+  useRouter().push("/nfts");
 }
 
 function onReset() {
