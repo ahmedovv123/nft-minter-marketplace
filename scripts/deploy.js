@@ -1,3 +1,5 @@
+const { ethers } = require("hardhat");
+
 async function main() {
     const [deployer] = await ethers.getSigners();
 
@@ -15,16 +17,19 @@ async function main() {
     const MarketPlace = await ethers.getContractFactory("NftMarketplace");
     const marketplace = await MarketPlace.deploy(initialMintCost, initialSupply, listingFee, tokenName, tokenSymbol);
   
-    console.log("NFT Markeplace address:", marketplace.address);
-
-    console.log("Deploying NFT with the account:", deployer.address);
-  
-    console.log("Account balance:", (await deployer.getBalance()).toString());
-  
     const NFT = await ethers.getContractFactory("NFT");
     const nft = await NFT.deploy(marketplace.address);
-  
+
+    const NUSD = await ethers.getContractFactory("nUSD");
+    const nUSD = await NUSD.deploy(initialSupply, 'Mock USD', 'nUSD')
+
+    const SwapPool = await ethers.getContractFactory("SwapPool");
+    const swapPool = await SwapPool.deploy(marketplace.address, nUSD.address)
+
+    console.log("NFT Markeplace address:", marketplace.address);
     console.log("NFT address:", nft.address);
+    console.log("nUSD address:", nUSD.address);
+    console.log("SwapPool address:", swapPool.address);
   }
   
   main()

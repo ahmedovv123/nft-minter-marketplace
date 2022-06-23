@@ -1,12 +1,11 @@
 <script setup>
 import { RouterView } from "vue-router";
 import TheNavbar from "./components/TheNavbar.vue";
-import TheFooter from "./components/TheFooter.vue";
 import { onUnmounted, onMounted } from "vue";
 import { useConnection } from "../src/stores/connection";
 import { useNftMarketplace } from "../src/stores/nftMarketplace";
 import { LoadingBar } from "quasar";
-import 'animate.css';
+import "animate.css";
 
 LoadingBar.setDefaults({
   color: "purple",
@@ -37,11 +36,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
 html,
 body {
   margin: 0px !important;
   padding: 0px !important;
 }
-
 </style>

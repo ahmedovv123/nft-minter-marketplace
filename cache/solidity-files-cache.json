@@ -111,8 +111,8 @@
       ]
     },
     "/home/ahmet/nft-minter-marketplace/contracts/Marketplace.sol": {
-      "lastModificationDate": 1655399871515,
-      "contentHash": "adedbfa31928fcc05fd3094f004e2b7c",
+      "lastModificationDate": 1655975369315,
+      "contentHash": "bfe557a590c0caee025f560323679ca4",
       "sourceName": "contracts/Marketplace.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -775,6 +775,45 @@
       ],
       "artifacts": [
         "Math"
+      ]
+    },
+    "/home/ahmet/nft-minter-marketplace/contracts/nUSD.sol": {
+      "lastModificationDate": 1655971168702,
+      "contentHash": "6f276b34b45eef4e6f0d74281cd202c0",
+      "sourceName": "contracts/nUSD.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/security/ReentrancyGuard.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.7"
+      ],
+      "artifacts": [
+        "nUSD"
       ]
     }
   }

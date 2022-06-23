@@ -15,7 +15,11 @@ module.exports = {
     },
     ropsten: {
       url: process.env.ROPSTEN_INFURA_URL,
-      accounts: [process.env.ROPSTEN_PRIVATE_KEY]
+      accounts: [process.env.PRIVATE_KEY]
+    },
+    mumbai: {
+      url: 'https://polygon-mumbai.g.alchemy.com/v2/7wragNJgaldMwaWCfPuD78z0-YHF7l4h',
+      accounts: [process.env.PRIVATE_KEY]
     }
   },
   solidity: {

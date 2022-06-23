@@ -54,8 +54,12 @@ async function disconnect() {
         ><q-btn stretch flat label="Mint / sell"
       /></RouterLink>
       <RouterLink to="/nfts"><q-btn stretch flat label="NFTs" /></RouterLink>
-      <RouterLink to="/withdraw"><q-btn stretch flat label="withdraw" /></RouterLink>
-      <RouterLink to="/exchange"><q-btn stretch flat label="exchange" /></RouterLink>
+      <RouterLink to="/withdraw"
+        ><q-btn stretch flat label="withdraw"
+      /></RouterLink>
+      <RouterLink to="/exchange"
+        ><q-btn stretch flat label="exchange"
+      /></RouterLink>
       <q-space />
       <div div v-if="currentAddress">
         UTT Balance: &nbsp;
@@ -72,7 +76,7 @@ async function disconnect() {
     </q-toolbar>
   </nav>
   <WrongNetwork
-    :visible="currentChain === '0x3' || currentChain === '' ? false : true"
+    :visible="currentChain === '0x13881' || currentChain === '' ? false : true"
   />
 </template>
 
@@ -95,7 +99,8 @@ nav {
   font-size: 12px;
   text-align: center;
 
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
 nav a.router-link-exact-active {

@@ -17,15 +17,15 @@ import nftAbi from "../../../artifacts/contracts/NFT.sol/NFT.json";
 const MARKETPLACE_ADDRESS = config.NFT_MARKETPLACE_ADDRESS;
 const NFT_ADDRESS = config.NFT_ADDRESS;
 
-const infuraPorovider = new ethers.providers.InfuraProvider(
-  "ropsten",
-  config.ROPSTEN_PROJECT_ID
+const alchemyProvider = new ethers.providers.AlchemyProvider(
+  "maticmum",
+  config.MUMBAI_ALCHEMY_API_KEY
 );
 
 const CONTRACT = new Contract(
   MARKETPLACE_ADDRESS,
   marketAbi.abi,
-  infuraPorovider
+  alchemyProvider
 );
 
 CONTRACT.on("ItemListed", async (seller, nftAddress, tokenId, price) => {
@@ -73,6 +73,7 @@ export const useNftMarketplace = defineStore({
   id: "marketplace",
   state: () => ({
     NFTs: [],
+    NFT_ADDRESS,
     iterator: 0,
     tokenBalance: 0,
     ethBalance: 0,
@@ -85,7 +86,7 @@ export const useNftMarketplace = defineStore({
     buyingProcess: false,
     mintProcess: false,
     listingProcess: false,
-    approving: false
+    approving: false,
   }),
   getters: {
     getNfts: (state) => state.NFTs,
@@ -94,6 +95,7 @@ export const useNftMarketplace = defineStore({
     getEarnings: (state) => state.earnings,
     getCurrentNftMinPrice: (state) => state.currentNftMintPrice,
     getNftSellFee: (state) => state.nftSellFee,
+    getNftAddress: (state) => state.NFT_ADDRESS,
   },
   actions: {
     async loadNfts(force = false) {
@@ -118,6 +120,8 @@ export const useNftMarketplace = defineStore({
 
       let eventFilter = CONTRACT.filters.ItemListed();
       let events = await CONTRACT.queryFilter(eventFilter);
+
+      console.log(eventFilter);
 
       for (let i = 0; i < events.length; i++) {
         let event = events[i];
@@ -182,7 +186,8 @@ export const useNftMarketplace = defineStore({
         useConnection().connect();
         return;
       }
-
+      console.log(address);
+      console.log(NFT_ADDRESS);
       this.listingProcess = {
         address,
         tokenId,
@@ -261,7 +266,14 @@ export const useNftMarketplace = defineStore({
             this.listingProcess = false;
           }, 3000);
           return;
+        } else if (e.message.includes("invalid address")) {
+          this.listingProcess.status = "NFT address is not valid";
+          setTimeout(() => {
+            this.listingProcess = false;
+          }, 3000);
+          return "invalid address";
         }
+        console.log(e.message);
         this.listingProcess.status = e.message;
         setTimeout(() => {
           this.listingProcess = false;
@@ -331,12 +343,16 @@ export const useNftMarketplace = defineStore({
     },
 
     async updateEthBalance() {
-      let balance = await infuraPorovider.getBalance(useConnection().getCurrentAddress.address);
-      this.ethBalance = +ethers.utils.formatEther(balance)
+      let balance = await alchemyProvider.getBalance(
+        useConnection().getCurrentAddress.address
+      );
+      this.ethBalance = +ethers.utils.formatEther(balance);
     },
 
     async updateEarnings() {
-      let earnings = await CONTRACT.getProceeds(useConnection().getCurrentAddress.address);
+      let earnings = await CONTRACT.getProceeds(
+        useConnection().getCurrentAddress.address
+      );
       this.earnings = +ethers.utils.formatEther(earnings);
     },
 
@@ -375,9 +391,9 @@ export const useNftMarketplace = defineStore({
       try {
         this.mintProcess.status = "Checking for allowance for UTT token";
         let allowance = await this.getTokenAllowance();
-        allowance = ethers.utils.formatEther(allowance.toString())
-        console.log(allowance)
-        console.log(this.currentNftMintPrice)
+        allowance = ethers.utils.formatEther(allowance.toString());
+        console.log(allowance);
+        console.log(this.currentNftMintPrice);
         if (allowance < this.currentNftMintPrice) {
           throw Error(`Insufficient allowance`);
         }
@@ -396,9 +412,10 @@ export const useNftMarketplace = defineStore({
         );
         this.mintProcess.status = "Pending to be confirmed";
         let receipt = await tx.wait();
-        let tokenId = parseInt(receipt.events[2].topics[3], 16)
+        let tokenId = parseInt(receipt.events[2].topics[3], 16);
         this.mintProcess.status = `Your NFT withd id ${tokenId} successfully minted ! `;
         this.mintProcess = false;
+        await this.updateTokenBalance();
         return tokenId;
       } catch (e) {
         console.log(e.message);
@@ -428,8 +445,8 @@ export const useNftMarketplace = defineStore({
     },
 
     async getParsedTokenAllowance() {
-      let allowance = await this.getTokenAllowance()
-      return ethers.utils.formatEther(allowance)
+      let allowance = await this.getTokenAllowance();
+      return ethers.utils.formatEther(allowance);
     },
 
     async approveOneNft({ tokenId, address }) {
@@ -463,7 +480,7 @@ export const useNftMarketplace = defineStore({
       const nftContract = new ethers.Contract(
         nftAddress,
         nftAbi.abi,
-        infuraPorovider
+        alchemyProvider
       );
 
       try {

@@ -4,17 +4,17 @@ import injectedModule from "@web3-onboard/injected-wallets";
 import URLS from "../../config.json";
 import { useNftMarketplace } from "../stores/nftMarketplace";
 
-const ROPSTEN_RPC_URL = URLS.ROPSTEN_INFURA_URL;
+const MUMBAI_RPC_URL = URLS.MUMBAI_ALCHEMY_URL;
 const injected = injectedModule();
 
 const onboard = Onboard({
   wallets: [injected],
   chains: [
     {
-      id: "0x3",
-      token: "rETH",
-      label: "Ethereum Ropsten Testnet",
-      rpcUrl: `${ROPSTEN_RPC_URL}`,
+      id: "0x13881",
+      token: "MATIC",
+      label: "Polygon Mumbai Testnet",
+      rpcUrl: `${MUMBAI_RPC_URL}`,
     },
   ],
   appMetadata: {
@@ -43,7 +43,7 @@ const walletSubscribe = walletsSub.subscribe(async (wallets) => {
   useConnection().currentAddress = wallets[0].accounts[0];
   useConnection().currentChain = wallets[0].chains[0].id;
   useConnection().provider = wallets[0].provider;
-  
+
   await useNftMarketplace().updateTokenBalance();
   await useNftMarketplace().updateEthBalance();
   await useNftMarketplace().updateEarnings();
@@ -78,8 +78,8 @@ export const useConnection = defineStore({
       window.localStorage.removeItem("connectedWallets");
     },
 
-    async switchToRopsten() {
-      await onboard.setChain({ chainId: "0x3" });
+    async switchToMumbai() {
+      await onboard.setChain({ chainId: "0x13881" });
     },
     walletUnsubscribe() {
       walletSubscribe.unsubscribe();

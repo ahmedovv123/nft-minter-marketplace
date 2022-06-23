@@ -2,6 +2,7 @@
 import { nextTick, ref, watch } from "vue";
 import { useNftMarketplace } from "../stores/nftMarketplace";
 import ConfettiExplosion from "vue-confetti-explosion";
+import { ethers } from "ethers";
 const nftMarketplace = useNftMarketplace();
 const tab = ref("mint");
 const mintedNftTokenId = ref(0);
@@ -18,6 +19,8 @@ const approveNotMet = ref(false);
 const approveNftModal = ref(false);
 const approveModal = ref(false);
 const approveValue = ref(0);
+const copied = ref(false);
+const refreshingPrice = ref(false);
 
 watch(
   () => nftToMint.value.image,
@@ -58,9 +61,9 @@ watch(
 async function onSubmit() {
   mintedNftTokenId.value = 0;
   let result = await nftMarketplace.mintNft(nftToMint.value);
-  console.log(result)
-  
-  if (typeof result !== 'number') {
+  console.log(result);
+
+  if (typeof result !== "number") {
     switch (result) {
       case "Insufficient allowance":
         allowanceNotMet.value = true;
@@ -71,7 +74,7 @@ async function onSubmit() {
     explode();
     onReset();
   }
-  
+
   // onReset();
 }
 
@@ -101,6 +104,35 @@ function onReset() {
 
 function onResetSell() {
   nftToSell.value = {};
+}
+
+function isValidAddress(address) {
+  try {
+    ethers.utils.getAddress(address);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function isValidPrice(price) {
+  console.log(isNaN(Number(price)));
+  if (price <= 0 || isNaN(Number(price))) return false;
+  return true;
+}
+
+function copyAddress() {
+  navigator.clipboard.writeText(nftMarketplace.getNftAddress);
+  copied.value = true;
+  setTimeout(() => {
+    copied.value = false;
+  }, 3000);
+}
+
+async function refreshPrice() {
+  refreshingPrice.value = true;
+  await nftMarketplace.updateNftMintPrice();
+  refreshingPrice.value = false;
 }
 
 async function approve() {
@@ -157,17 +189,16 @@ async function approveAllNfts() {
               >
                 {{ nftMintPrice }} UTT
                 <q-icon
-                  @click="nftMarketplace.updateNftMintPrice()"
+                  v-if="!refreshingPrice"
+                  @click="refreshPrice()"
                   class="cursor-pointer"
                   name="refresh"
                 />
+                <q-spinner v-else color="primary" />
               </div>
               <div class="text-body1 text-center">
                 Еach mint increases the price by 1%
-                <q-icon
-                  @click="nftMarketplace.updateNftMintPrice()"
-                  name="north"
-                />
+                <q-icon name="north" />
               </div>
             </div>
           </q-banner>
@@ -210,7 +241,14 @@ async function approveAllNfts() {
           </div>
 
           <div>
-            <q-btn :disable="nftMarketplace.tokenBalance < nftMarketplace.currentNftMintPrice" label="MINT" type="submit" color="primary" />
+            <q-btn
+              :disable="
+                nftMarketplace.tokenBalance < nftMarketplace.currentNftMintPrice
+              "
+              label="MINT"
+              type="submit"
+              color="primary"
+            />
             <q-btn
               label="Reset"
               type="reset"
@@ -219,11 +257,21 @@ async function approveAllNfts() {
               class="q-ml-sm"
             />
           </div>
-          <div class="text-body1 text-negative" v-if="nftMarketplace.tokenBalance < nftMarketplace.currentNftMintPrice" >
+          <div
+            class="text-body1 text-negative"
+            v-if="
+              nftMarketplace.tokenBalance < nftMarketplace.currentNftMintPrice
+            "
+          >
             Your balance is below the mint fee
           </div>
-          <div v-if="mintedNftTokenId" class="column items-center text-body1 text-positive">
-            Freshly minted NFT with id <div class="text-orange"> {{ mintedNftTokenId }} </div> is your now !
+          <div
+            v-if="mintedNftTokenId"
+            class="column items-center text-body1 text-positive"
+          >
+            Freshly minted NFT with id
+            <div class="text-orange">{{ mintedNftTokenId }}</div>
+            is your now !
           </div>
         </q-form>
         <div class="row justify-center">
@@ -268,9 +316,18 @@ async function approveAllNfts() {
                 :style="{ color: '#1976d2' }"
                 class="text-h5 text-center text-weight-bolder"
               >
-                {{ nftSellFee }} ETH
+                {{ nftSellFee }} MATIC
               </div>
-              0x5bbE336ed468EE33A37467aFB2358D2BF7f1a799
+              <u>{{ nftMarketplace.getNftAddress }}</u
+              >&nbsp;
+              <q-icon
+                v-if="!copied"
+                @click="copyAddress"
+                class="copyAddress"
+                size="20px"
+                name="content_copy"
+              />
+              <q-icon v-else size="20px" name="done" />
             </div>
           </q-banner>
         </div>
@@ -279,10 +336,11 @@ async function approveAllNfts() {
             filled
             v-model="nftToSell.address"
             label="NFT Address *"
-            :hint= "`Our native NFT address - 0x5bbE336ed468EE33A37467aFB2358D2BF7f1a799`"
+            :hint="`Our native NFT address - ${nftMarketplace.getNftAddress}`"
             lazy-rules
             :rules="[
               (val) => (val && val.length > 0) || 'Please enter nft address',
+              (val) => isValidAddress(val) || 'Address is invalid',
             ]"
           />
 
@@ -302,10 +360,9 @@ async function approveAllNfts() {
           <q-input
             filled
             v-model="nftToSell.price"
-            type="number"
             label="Asset Price *"
             lazy-rules
-            :rules="[(val) => val > 0 || 'Please type a real price']"
+            :rules="[(val) => isValidPrice(val) || 'Please type a real price']"
           />
 
           <div>
@@ -462,18 +519,25 @@ async function approveAllNfts() {
 </template>
 
 <style scoped>
+.copyAddress {
+  cursor: pointer;
+}
 .q-tab-panels {
   width: 60%;
 }
 .q-banner {
   justify-items: center;
-  box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px,
+    rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px,
+    rgba(0, 0, 0, 0.09) 0px 32px 16px;
 }
 
-.q-tab-panels{
+.q-tab-panels {
   border-radius: 15px;
   /* box-shadow: 10px 10px 10px #888888; */
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   /* box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(240, 46, 170, 0.2) 15px 15px, rgba(240, 46, 170, 0.1) 20px 20px, rgba(240, 46, 170, 0.05) 25px 25px; */
   /* box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px; */
 }

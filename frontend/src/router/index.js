@@ -3,7 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import MintView from "../views/MintView.vue";
 import NftsView from "../views/NftsView.vue";
 import WithdrawView from "../views/WithdrawView.vue";
-import ExchangeView from '../views/ExchangeView.vue';
+import ExchangeView from "../views/ExchangeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
