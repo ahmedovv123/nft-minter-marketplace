@@ -271,7 +271,7 @@ export const useNftMarketplace = defineStore({
         console.log(
           e.message.includes("ERC721: owner query for nonexistent token")
         );
-        if (e.message.includes("ERC721: owner query for nonexistent token")) {
+        if (e.message.includes("ERC721: owner query for nonexistent token") || (e.data && e.data.message.includes("ERC721: owner query for nonexistent token"))) {
           this.listingProcess.status = "This token doesnt exist !";
           setTimeout(() => {
             this.listingProcess = false;
@@ -424,7 +424,7 @@ export const useNftMarketplace = defineStore({
         this.mintProcess.status = "Pending to be confirmed";
         let receipt = await tx.wait();
         let tokenId = parseInt(receipt.events[2].topics[3], 16);
-        this.mintProcess.status = `Your NFT withd id ${tokenId} successfully minted ! `;
+        this.mintProcess.status = `Your NFT with id ${tokenId} successfully minted ! `;
         this.mintProcess = false;
         await this.updateTokenBalance();
         return tokenId;

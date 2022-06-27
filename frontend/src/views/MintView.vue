@@ -94,9 +94,6 @@ async function onSubmitSell() {
         break;
     }
   }
-
-  onResetSell();
-  useRouter().push("/nfts");
 }
 
 function onReset() {
@@ -318,7 +315,7 @@ async function approveAllNfts() {
                 :style="{ color: '#1976d2' }"
                 class="text-h5 text-center text-weight-bolder"
               >
-                {{ nftSellFee }} MATIC
+                {{ nftSellFee }} MATIC <div class="text-subtitle1">{{ `($${Number(nftMarketplace.getMaticPriceInUsd * nftSellFee).toFixed(3)})` }}</div>
               </div>
               <u>{{ nftMarketplace.getNftAddress }}</u
               >&nbsp;
@@ -337,7 +334,7 @@ async function approveAllNfts() {
           <q-input
             filled
             v-model="nftToSell.address"
-            label="NFT Address *"
+            label="NFT Address"
             :hint="`Our native NFT address - ${nftMarketplace.getNftAddress}`"
             lazy-rules
             :rules="[
@@ -350,7 +347,7 @@ async function approveAllNfts() {
             filled
             v-model="nftToSell.tokenId"
             type="number"
-            label="NFT token ID *"
+            label="NFT token ID"
             hint="1"
             lazy-rules
             :rules="[
@@ -362,11 +359,11 @@ async function approveAllNfts() {
           <q-input
             filled
             v-model="nftToSell.price"
-            label="Asset Price *"
+            :label="`Asset Price ($${isValidPrice(nftToSell.price) ? Number(nftToSell.price * nftMarketplace.getMaticPriceInUsd).toFixed(3) : '' }) `"
             lazy-rules
+            suffix="MATIC"
             :rules="[(val) => isValidPrice(val) || 'Please type a real price']"
           />
-
           <div>
             <q-btn label="Submit" type="submit" color="primary" />
             <q-btn
@@ -449,7 +446,7 @@ async function approveAllNfts() {
         <q-separator></q-separator>
         <br />
         <p>NFT Price:</p>
-        {{ listingProcess.price }} ETH
+        {{ listingProcess.price }} MATIC
         <q-separator></q-separator>
         <br />
         <q-inner-loading

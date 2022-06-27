@@ -2,7 +2,7 @@
 import { useNftMarketplace } from "../stores/nftMarketplace";
 import { ref, watch } from "vue";
 const nftMarkeplace = useNftMarketplace();
-const priceInUsd = ref(0);
+const priceInUsd = ref(props.nft.price * nftMarkeplace.getMaticPriceInUsd);
 const props = defineProps({
   nft: Object,
 });
