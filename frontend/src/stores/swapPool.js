@@ -23,7 +23,7 @@ export const useSwapPool = defineStore({
   id: "swapPool",
   state: () => ({
     t1Address: config.NFT_MARKETPLACE_ADDRESS,
-    t2Address: "0xe970747431aEC596EC060273A1e21f97009a91FB",
+    t2Address: "0xEC8Da6b31472504F0e5182a46E86463A5E08733f",
   }),
   getters: {
     getT1Address: (state) => state.t1Address,

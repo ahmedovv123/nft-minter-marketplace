@@ -3,7 +3,6 @@ import { nextTick, ref, watch } from "vue";
 import { useNftMarketplace } from "../stores/nftMarketplace";
 import ConfettiExplosion from "vue-confetti-explosion";
 import { ethers } from "ethers";
-import { useRouter } from "vue-router";
 const nftMarketplace = useNftMarketplace();
 const tab = ref("mint");
 const mintedNftTokenId = ref(0);
@@ -315,7 +314,14 @@ async function approveAllNfts() {
                 :style="{ color: '#1976d2' }"
                 class="text-h5 text-center text-weight-bolder"
               >
-                {{ nftSellFee }} MATIC <div class="text-subtitle1">{{ `($${Number(nftMarketplace.getMaticPriceInUsd * nftSellFee).toFixed(3)})` }}</div>
+                {{ nftSellFee }} MATIC
+                <div class="text-subtitle1">
+                  {{
+                    `($${Number(
+                      nftMarketplace.getMaticPriceInUsd * nftSellFee
+                    ).toFixed(3)})`
+                  }}
+                </div>
               </div>
               <u>{{ nftMarketplace.getNftAddress }}</u
               >&nbsp;
@@ -359,7 +365,13 @@ async function approveAllNfts() {
           <q-input
             filled
             v-model="nftToSell.price"
-            :label="`Asset Price ($${isValidPrice(nftToSell.price) ? Number(nftToSell.price * nftMarketplace.getMaticPriceInUsd).toFixed(3) : '' }) `"
+            :label="`Asset Price ($${
+              isValidPrice(nftToSell.price)
+                ? Number(
+                    nftToSell.price * nftMarketplace.getMaticPriceInUsd
+                  ).toFixed(3)
+                : ''
+            }) `"
             lazy-rules
             suffix="MATIC"
             :rules="[(val) => isValidPrice(val) || 'Please type a real price']"

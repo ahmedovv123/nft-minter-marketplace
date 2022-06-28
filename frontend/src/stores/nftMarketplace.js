@@ -4,7 +4,6 @@ import { Contract, ethers } from "ethers";
 import { LoadingBar } from "quasar";
 import { useConnection } from "./connection";
 import { useIpfs } from "./ipfs";
-import axios from "axios";
 
 LoadingBar.setDefaults({
   color: "purple",
@@ -128,11 +127,12 @@ export const useNftMarketplace = defineStore({
       }
       this.loadedFromStorage = false;
       this.clearStorage();
-
+      this.NFTs = [];
+      this.iterator = 0;
+      this.uniqueIds = new Set();
+      this.hashMap = new Map();
       let eventFilter = CONTRACT.filters.ItemListed();
       let events = await CONTRACT.queryFilter(eventFilter);
-
-      console.log(eventFilter);
 
       for (let i = 0; i < events.length; i++) {
         let event = events[i];
@@ -271,7 +271,13 @@ export const useNftMarketplace = defineStore({
         console.log(
           e.message.includes("ERC721: owner query for nonexistent token")
         );
-        if (e.message.includes("ERC721: owner query for nonexistent token") || (e.data && e.data.message.includes("ERC721: owner query for nonexistent token"))) {
+        if (
+          e.message.includes("ERC721: owner query for nonexistent token") ||
+          (e.data &&
+            e.data.message.includes(
+              "ERC721: owner query for nonexistent token"
+            ))
+        ) {
           this.listingProcess.status = "This token doesnt exist !";
           setTimeout(() => {
             this.listingProcess = false;

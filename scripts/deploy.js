@@ -5,7 +5,7 @@ async function main() {
 
     const initialMintCost = '5000000000000000000';
     const initialSupply = '1000000000000000000000000000';
-    const listingFee = '5000000000000000';
+    const listingFee = '10000000000000000000';
     const tokenName = 'UTT Token';
     const tokenSymbol = 'UTT';
 
