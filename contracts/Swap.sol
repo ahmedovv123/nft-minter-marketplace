@@ -2,7 +2,6 @@
 pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract SwapPool is ERC20 {
@@ -13,7 +12,7 @@ contract SwapPool is ERC20 {
     uint256 public reserve0;
     uint256 public reserve1;
 
-    uint256 public constant INITIAL_SUPPLY = 1000 * 10**18;
+    uint256 public constant INITIAL_SUPPLY = 1000e18;
 
     constructor(address _token0, address _token1) ERC20("SwapPoolToken", "SPT") {
         token0 = _token0;
